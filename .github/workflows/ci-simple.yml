@@ -46,6 +46,6 @@ jobs:
 
           docker build \
             -t ghcr.io/$DOCKER_USER_LOWER/$DOCKER_IMAGE_NAME:latest \
-            docker
+            -f docker/dockerfile .
 
           docker push ghcr.io/$DOCKER_USER_LOWER/$DOCKER_IMAGE_NAME:latest
