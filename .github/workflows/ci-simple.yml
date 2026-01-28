@@ -8,11 +8,41 @@ on:
 permissions:
   packages: write
 
+env:
+  DOCKER_USER: ${{ github.repository_owner }}
+  APPLICATION_PATH: "."
+  DOCKER_IMAGE_NAME: "treinamento-azure"
+
 jobs:
-  build-treinamento-azure:
-    uses: AlexRozaLopes/my-actions-reusable/.github/workflows/build-and-create-docker-image-java.yml@main
-    permissions: write-all
-    with:
-      DOCKER_IMAGE_NAME: treinamento-azure
-      DOCKER_FILE_PATH: docker
-      APPLICATION_PATH: .
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file ${{APPLICATION_PATH}}/pom.xml
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          DOCKER_USER_LOWER=${DOCKER_USER,,}
+          echo "Docker user lower: $DOCKER_USER_LOWER"
+          
+          docker build -t ghcr.io/$DOCKER_USER_LOWER/${{DOCKER_IMAGE_NAME}}:latest -f ${{DOCKER_FILE_PATH}}/Dockerfile ${{APPLICATION_PATH}}/
+          
+          docker push ghcr.io/$DOCKER_USER_LOWER/${{DOCKER_IMAGE_NAME}}:latest
