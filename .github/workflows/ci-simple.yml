@@ -1,0 +1,18 @@
+name: ci simple
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  packages: write
+
+jobs:
+  build-treinamento-azure:
+    uses: AlexRozaLopes/my-actions-reusable/.github/workflows/build-and-create-docker-image-java.yml@main
+    permissions: write-all
+    with:
+      DOCKER_IMAGE_NAME: treinamento-azure
+      DOCKER_FILE_PATH: treinamento-azure/docker
+      APPLICATION_PATH: .
