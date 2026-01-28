@@ -14,5 +14,5 @@ jobs:
     permissions: write-all
     with:
       DOCKER_IMAGE_NAME: treinamento-azure
-      DOCKER_FILE_PATH: treinamento-azure/docker
+      DOCKER_FILE_PATH: docker
       APPLICATION_PATH: .
