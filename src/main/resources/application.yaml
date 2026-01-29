@@ -1,3 +1,8 @@
 spring:
   application:
     name: treinamento-azure
+
+azure:
+  storage:
+    account-name: meustorageaccountteste
+    container-name: imagens
