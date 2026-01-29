@@ -97,6 +97,11 @@ jobs:
       APP_SERVICE_PLAN: plan-treinamento-azure
       WEBAPP_NAME: treinamento-azure-${{ github.run_id }}
       DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/treinamento-azure:latest
+      STORAGE_ACCOUNT_NAME: sttreinamentoazure
+      BLOB_CONTAINER_NAME: imagens
+      KEYVAULT_NAME: kv-treinamento-azure
+      KEYVAULT_SECRET_NAME: minha-primeira-key
+      KEYVAULT_SECRET_VALUE: valor-super-secreto
 
     steps:
       - name: Login na Azure
@@ -109,6 +114,22 @@ jobs:
           az group create \
             --name $RESOURCE_GROUP \
             --location $LOCATION
+
+      - name: Criar Storage Account
+        run: |
+          az storage account create \
+            --name $STORAGE_ACCOUNT_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --location $LOCATION \
+            --sku Standard_LRS \
+            --kind StorageV2 \
+            --allow-blob-public-access true
+
+      - name: Criar Blob Container "imagens"
+        run: |
+          az storage container create \
+            --name $BLOB_CONTAINER_NAME \
+            --account-name $STORAGE_ACCOUNT_NAME
 
       - name: Criar App Service Plan (Linux)
         run: |
@@ -129,3 +150,51 @@ jobs:
           az webapp identity assign \
             --name $WEBAPP_NAME \
             --resource-group $RESOURCE_GROUP
+
+      - name: Dar acesso Blob para Web App (Managed Identity)
+        run: |
+          PRINCIPAL_ID=$(az webapp identity show \
+            --name $WEBAPP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query principalId -o tsv)
+
+          STORAGE_ID=$(az storage account show \
+            --name $STORAGE_ACCOUNT_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query id -o tsv)
+
+          az role assignment create \
+            --assignee $PRINCIPAL_ID \
+            --role "Storage Blob Data Contributor" \
+            --scope $STORAGE_ID
+
+      - name: Criar Key Vault
+        run: |
+          az keyvault create \
+            --name $KEYVAULT_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --location $LOCATION \
+            --enable-rbac-authorization true
+
+      - name: Criar secret no Key Vault
+        run: |
+          az keyvault secret set \
+            --vault-name $KEYVAULT_NAME \
+            --name $KEYVAULT_SECRET_NAME \
+            --value "$KEYVAULT_SECRET_VALUE"
+
+      - name: Dar acesso do Key Vault ao Web App (Managed Identity)
+        run: |
+          PRINCIPAL_ID=$(az webapp identity show \
+            --name $WEBAPP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query principalId -o tsv)
+
+          KEYVAULT_ID=$(az keyvault show \
+            --name $KEYVAULT_NAME \
+            --query id -o tsv)
+
+          az role assignment create \
+            --assignee $PRINCIPAL_ID \
+            --role "Key Vault Secrets User" \
+            --scope $KEYVAULT_ID

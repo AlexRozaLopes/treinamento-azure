@@ -9,5 +9,5 @@ spring:
 
 azure:
   storage:
-    account-name: meustorageaccountteste
-    container-name: imagens
+    account-name: ${ACCOUNT_NAME}
+    container-name: ${CONTAINER_NAME}
