@@ -84,3 +84,48 @@ jobs:
 
           # Push Docker Hub
           docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/$DOCKER_IMAGE_NAME:latest
+
+
+  azure-webapp:
+    name: Create / Update Azure Web App
+    runs-on: ubuntu-latest
+    needs: docker-image
+
+    env:
+      RESOURCE_GROUP: rg-treinamento-azure
+      LOCATION: brazilsouth
+      APP_SERVICE_PLAN: plan-treinamento-azure
+      WEBAPP_NAME: treinamento-azure-${{ github.run_id }}
+      DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/treinamento-azure:latest
+
+    steps:
+      - name: Login na Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Criar Resource Group (idempotente)
+        run: |
+          az group create \
+            --name $RESOURCE_GROUP \
+            --location $LOCATION
+
+      - name: Criar App Service Plan (Linux)
+        run: |
+          az appservice plan create \
+            --name $APP_SERVICE_PLAN \
+            --resource-group $RESOURCE_GROUP \
+            --sku B1 \
+            --is-linux
+
+      - name: Criar Web App com System-Assigned Identity
+        run: |
+          az webapp create \
+            --resource-group $RESOURCE_GROUP \
+            --plan $APP_SERVICE_PLAN \
+            --name $WEBAPP_NAME \
+            --deployment-container-image-name $DOCKER_IMAGE
+
+          az webapp identity assign \
+            --name $WEBAPP_NAME \
+            --resource-group $RESOURCE_GROUP
