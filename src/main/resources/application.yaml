@@ -1,6 +1,11 @@
 spring:
   application:
     name: treinamento-azure
+  cloud:
+    azure:
+      keyvault:
+        secret:
+          endpoint: https://meu-primeiro-key-vault.vault.azure.net/
 
 azure:
   storage:
