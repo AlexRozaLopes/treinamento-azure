@@ -101,7 +101,7 @@ jobs:
       BLOB_CONTAINER_NAME: imagens
       KEYVAULT_NAME: kv-treinamento-azure
       KEYVAULT_SECRET_NAME: minha-primeira-key
-      KEYVAULT_SECRET_VALUE: valor-super-secreto
+      KEYVAULT_SECRET_VALUE: ${{ secrets.KEYVAULT_SECRET_VALUE }}
 
     steps:
       - name: Login na Azure
