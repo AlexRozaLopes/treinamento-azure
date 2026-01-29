@@ -45,7 +45,8 @@ jobs:
           echo "Docker user lower: $DOCKER_USER_LOWER"
 
           docker build \
-            -t ghcr.io/$DOCKER_USER_LOWER/$DOCKER_IMAGE_NAME:latest \
-            -f docker/dockerfile .
+          -t ghcr.io/$DOCKER_USER_LOWER/$DOCKER_IMAGE_NAME:latest \
+          -f docker/Dockerfile .
+
 
           docker push ghcr.io/$DOCKER_USER_LOWER/$DOCKER_IMAGE_NAME:latest
