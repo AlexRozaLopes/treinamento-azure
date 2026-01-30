@@ -1,6 +1,5 @@
 package com.example.treinamento_azure.controller;
 
-import com.example.treinamento_azure.model.Link;
 import com.example.treinamento_azure.model.Mensagem;
 import com.example.treinamento_azure.service.ImageStorageService;
 import org.springframework.http.MediaType;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/images")
@@ -29,8 +27,7 @@ public class ImageController {
             return ResponseEntity.badRequest().body(new Mensagem("Arquivo vazio"));
         }
 
-        String url = imageStorageService.upload(file);
-        return ResponseEntity.ok(new Link(UUID.randomUUID().toString(), url));
+        return ResponseEntity.ok(imageStorageService.upload(file));
     }
 
     @GetMapping("/list")

@@ -21,8 +21,9 @@ public class ImageStorageService {
         this.blobServiceClient = blobServiceClient;
     }
 
-    public String upload(MultipartFile file) throws IOException {
-        String blobName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+    public Link upload(MultipartFile file) throws IOException {
+        UUID uuid = UUID.randomUUID();
+        String blobName = uuid + "-" + file.getOriginalFilename();
 
         BlobClient blobClient = blobServiceClient
                 .getBlobContainerClient(containerName)
@@ -30,13 +31,30 @@ public class ImageStorageService {
 
         blobClient.upload(file.getInputStream(), file.getSize(), true);
 
-        return blobClient.getBlobUrl();
+        return new Link(uuid.toString(),blobName,blobClient.getBlobUrl());
     }
 
     public List<Link> list() {
-        return blobServiceClient
-                .getBlobContainerClient(containerName).listBlobs()
-                .stream().map(b -> new Link(UUID.randomUUID().toString(),b.getName())).collect(Collectors.toList());
+        var containerClient = blobServiceClient
+                .getBlobContainerClient(containerName);
+
+        return containerClient
+                .listBlobs()
+                .stream()
+                .map(b -> {
+                    String blobName = b.getName();
+
+                    String url = containerClient
+                            .getBlobClient(blobName)
+                            .getBlobUrl();
+
+                    return new Link(
+                            UUID.randomUUID().toString(),
+                            blobName,
+                            url
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }
 
