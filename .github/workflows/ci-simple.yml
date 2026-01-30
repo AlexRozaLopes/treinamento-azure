@@ -123,11 +123,11 @@ jobs:
             --kind StorageV2 \
             --allow-blob-public-access true
 
-      - name: Criar Blob Container "imagens"
+      - name: Criar Blob Container imagens
         run: |
           az storage container create \
-            --name $BLOB_CONTAINER_NAME \
-            --account-name $STORAGE_ACCOUNT_NAME \
+            --name "$BLOB_CONTAINER_NAME" \
+            --account-name "$STORAGE_ACCOUNT_NAME" \
             --public-access blob \
             --auth-mode login
 
