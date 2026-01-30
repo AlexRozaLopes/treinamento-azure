@@ -1,9 +1,7 @@
 name: ci simple
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -129,7 +127,9 @@ jobs:
         run: |
           az storage container create \
             --name $BLOB_CONTAINER_NAME \
-            --account-name $STORAGE_ACCOUNT_NAME
+            --account-name $STORAGE_ACCOUNT_NAME \
+            --public-access blob \
+            --auth-mode login
 
       - name: Criar App Service Plan (Linux)
         run: |
