@@ -200,3 +200,28 @@ jobs:
             --assignee-principal-type ServicePrincipal \
             --role "Key Vault Secrets User" \
             --scope $KEYVAULT_ID
+
+      - name: Dar acesso de leitura e escrita do Cosmos DB ao Web App
+        run: |
+          # Pega o principalId da Managed Identity do Web App
+          PRINCIPAL_ID=$(az webapp identity show \
+            --name $WEBAPP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query principalId -o tsv)
+          
+          echo "Principal ID do Web App: $PRINCIPAL_ID"
+          
+          # Pega o resourceId da Cosmos DB Account
+          COSMOS_ID=$(az cosmosdb show \
+            --name cosmos-free-alex \
+            --resource-group rg-cosmos-free \
+            --query id -o tsv)
+          
+          echo "Resource ID do Cosmos DB: $COSMOS_ID"
+          
+          # Cria role assignment no DATA PLANE
+          az role assignment create \
+            --assignee-object-id $PRINCIPAL_ID \
+            --assignee-principal-type ServicePrincipal \
+            --role "Cosmos DB Built-in Data Contributor" \
+            --scope $COSMOS_ID

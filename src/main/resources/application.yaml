@@ -6,7 +6,7 @@ spring:
       cosmos:
         endpoint: https://cosmos-free-alex.documents.azure.com:443/
         database: appdb
-        connection-mode: gateway
+#        connection-mode: gateway
       keyvault:
         secret:
           endpoint: https://kv-treinamento-azure.vault.azure.net/
