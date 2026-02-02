@@ -45,6 +45,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter-data-cosmos</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.azure.spring</groupId>
 			<artifactId>spring-cloud-azure-starter-keyvault</artifactId>
 		</dependency>
 		<dependency>
@@ -55,6 +59,10 @@
 		<dependency>
 			<groupId>com.azure.spring</groupId>
 			<artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-blackbird</artifactId>
 		</dependency>
 	</dependencies>
 

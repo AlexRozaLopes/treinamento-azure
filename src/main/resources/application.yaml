@@ -3,6 +3,10 @@ spring:
     name: treinamento-azure
   cloud:
     azure:
+      cosmos:
+        endpoint: https://cosmos-free-alex.documents.azure.com:443/
+        database: appdb
+        connection-mode: gateway
       keyvault:
         secret:
           endpoint: https://kv-treinamento-azure.vault.azure.net/
