@@ -1,4 +1,4 @@
-name: ci/cd simple
+name: ci/cd simples
 
 on:
   workflow_dispatch:
